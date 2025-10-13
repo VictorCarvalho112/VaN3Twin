@@ -530,7 +530,6 @@ int main (int argc, char *argv[])
   outputFile << "\nMetric Supervisor statistics for C-V2X" << std::endl;
   outputFile << "Average PRR: " << metSup->getAveragePRR_overall () << std::endl;
   outputFile << "Average latency (ms): " << metSup->getAverageLatency_overall () << std::endl;
-  outputFile << "Average SINR (dB): " << metSup->getAverageSINR_overall() << std::endl;
   outputFile << "RX packet count (from PRR Supervisor): " << metSup->getNumberRx_overall () << std::endl;
   outputFile << "TX packet count (from PRR Supervisor): " << metSup->getNumberTx_overall () << std::endl;
   // std::cout << "Average number of vehicle within the " << m_baseline_prr << " m baseline: " << metSup_nr->getAverageNumberOfVehiclesInBaseline_overall () << std::endl;

@@ -227,7 +227,7 @@ def switch_to_carla():
     ns_3_dir = os.getcwd()
 
     subprocess.run(["mkdir", "src-backup"])
-    subprocess.run(["cp", "-r", "src/" "src-backup/"])
+    subprocess.run(["cp", "-r", "src/", "src-backup/"])
 
     # Switch CMakeLists.txt and PRRsup
     os.chdir('src/automotive/')
@@ -301,7 +301,8 @@ def switch_to_base():
 
     remove_after_pattern(FILE, '${libcarla}')
     """
-
+    
+    subprocess.run(["rm", "-rf", "src/"])
     subprocess.run(["cp", "-r", "src-backup/" "src/"])
 
     if os.path.exists("aux-files/current-mode.txt"):
