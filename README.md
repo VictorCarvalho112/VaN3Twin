@@ -204,7 +204,7 @@ To enable this specific feature of the simulator, it is important to **follow th
     ./ns3 run "v2v-simple-cam-exchange-80211p"
     ```
 
-For more details on how to manage the co-channel coexistence simulations, such as how to pass the necessaries parameters to the `TxTracker` module, you can refer to the example `src/automotive/examples/v2v-cam-exchange-coexistence-80211p-nrv2x.cc`.
+For more details on how to manage the co-channel coexistence simulations, such as how to pass the necessary parameters to the `TxTracker` module, you can refer to the example `src/automotive/examples/v2v-coexistence-80211p-nrv2x.cc`.
 
 # Working with an IDE
 
