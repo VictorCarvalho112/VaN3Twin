@@ -495,6 +495,7 @@ void DCC::checkQueue ()
     if (m_last_tx > 0)
       {
         int64_t wait_time = m_Toff_ms - elapsed;
+        if (wait_time <= 0) wait_time = 5;
         Simulator::Schedule(MilliSeconds(wait_time), &DCC::checkQueue, this);
       }
   }
