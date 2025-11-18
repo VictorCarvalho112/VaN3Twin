@@ -101,7 +101,7 @@ void DCC::StartDCC()
       {
         std::ofstream file;
         file.open(m_log_file, std::ios::out);
-        file << "time,currentCBR,CBRITS,new_delta,#_dropped\n";
+        file << "time,CBR,CBRITS,new_delta,#_dropped\n";
         file.close();
       }
   }
@@ -212,6 +212,11 @@ void DCC::adaptiveDCC()
 
   // Step 3
   float old_delta = m_delta;
+  if (old_delta == 0)
+    {
+      // First case
+      old_delta = m_Ton_pp / 100.0 > 1e-3 ? m_Ton_pp / 100.0 : 1e-3;
+    }
   float new_delta = (1 - m_alpha) * old_delta + delta_offset;
 
   // Step 4
@@ -240,7 +245,6 @@ void DCC::adaptiveDCC()
     {
       std::ofstream file;
       file.open(m_log_file, std::ios::app);
-
       file << std::fixed << Simulator::Now().GetNanoSeconds() << "," << currentCBR << "," << m_CBR_its << "," << m_delta << "," << m_dropped_by_gate << "\n";
       file.close();
     }
@@ -281,7 +285,7 @@ void DCC::updateTgoAfterTransmission()
 void DCC::updateTgoAfterDeltaUpdate()
 {
   auto now = static_cast<int>(Simulator::Now().GetMilliSeconds());
-  if (checkGateOpen( now))
+  if (checkGateOpen(now))
     {
       // Update just if the gate is currently closed, otherwise return
       return;
@@ -530,4 +534,3 @@ void DCC::setSendCallback(std::function<void(const QueuePacket&)> cb)
 }
 
 }
-
