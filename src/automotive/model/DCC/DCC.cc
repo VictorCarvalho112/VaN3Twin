@@ -97,10 +97,24 @@ void DCC::StartDCC()
   {
     Simulator::Schedule(MilliSeconds(m_T_CBR), &DCC::adaptiveDCCcheckCBR, this);
     Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::adaptiveDCC, this);
+    if (m_log_file != "")
+      {
+        std::ofstream file;
+        file.open(m_log_file, std::ios::out);
+        file << "time,currentCBR,CBRITS,new_delta,#_dropped\n";
+        file.close();
+      }
   }
   else
   {
     Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::reactiveDCC, this);
+    if (m_log_file != "")
+      {
+        std::ofstream file;
+        file.open(m_log_file, std::ios::out);
+        file << "time,CBR,state,tx_pwr,int_pkt_time,#_dropped\n";
+        file.close();
+      }
   }
   if (m_queue_length > 0)
     {
@@ -146,7 +160,7 @@ void DCC::reactiveDCC()
       std::ofstream file;
       file.open(m_log_file, std::ios::app);
 
-      file << std::fixed << Simulator::Now().GetNanoSeconds() << "," << currentCBR << "," << m_current_state << "," << tx_power << "," << int_pkt_time << "\n";
+      file << std::fixed << Simulator::Now().GetNanoSeconds() << "," << currentCBR << "," << m_current_state << "," << tx_power << "," << int_pkt_time << "," << m_dropped_by_gate << "\n";
       file.close();
     }
 
@@ -227,7 +241,7 @@ void DCC::adaptiveDCC()
       std::ofstream file;
       file.open(m_log_file, std::ios::app);
 
-      file << std::fixed << Simulator::Now().GetNanoSeconds() << "," << currentCBR << "," << m_CBR_its << "," << m_delta << "\n";
+      file << std::fixed << Simulator::Now().GetNanoSeconds() << "," << currentCBR << "," << m_CBR_its << "," << m_delta << "," << m_dropped_by_gate << "\n";
       file.close();
     }
 
@@ -257,8 +271,11 @@ void DCC::updateTgoAfterTransmission()
   m_Toff_ms = aux;
   auto now = static_cast<int>(Simulator::Now().GetMilliSeconds());
   int elapsed = now - m_last_tx;
-  if (elapsed >= m_Toff_ms) checkQueue();
-  else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+  if (m_queue_length > 0)
+    {
+      if (elapsed >= m_Toff_ms) checkQueue();
+      else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+    }
 }
 
 void DCC::updateTgoAfterDeltaUpdate()
@@ -283,8 +300,11 @@ void DCC::updateTgoAfterDeltaUpdate()
   m_Tgo_ms = m_Tpg_ms + aux;
   m_Toff_ms = aux;
   int elapsed = now - m_last_tx;
-  if (elapsed >= m_Toff_ms) checkQueue();
-  else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+  if (m_queue_length > 0)
+    {
+      if (elapsed >= m_Toff_ms) checkQueue();
+      else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+    }
 }
 
 bool DCC::checkGateOpen(int64_t now)
@@ -309,8 +329,11 @@ void DCC::updateTgoAfterStateCheck(uint32_t Toff)
   m_Tgo_ms = now + Toff;
   m_Toff_ms = Toff;
   int elapsed = now - m_last_tx;
-  if (elapsed >= m_Toff_ms) checkQueue();
-  else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+  if (m_queue_length > 0)
+    {
+      if (elapsed >= m_Toff_ms) checkQueue();
+      else Simulator::Schedule(MilliSeconds(m_Toff_ms - elapsed), &DCC::checkQueue, this);
+    }
 }
 
 void
