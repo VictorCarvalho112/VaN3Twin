@@ -1103,7 +1103,7 @@ namespace ns3 {
       m_LocT_Mutex.lock ();
       for(auto it = m_GNLocT.begin(); it != m_GNLocT.end(); ++it)
         {
-          auto cbr_data = it->second.cbr_extension;
+          auto& cbr_data = it->second.cbr_extension;
           // Clean old data for CBR_R0_Hop
           size_t counter = 0;
           std::vector<size_t> to_delete;
