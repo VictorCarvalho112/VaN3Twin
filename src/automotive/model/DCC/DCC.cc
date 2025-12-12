@@ -50,17 +50,19 @@ void DCC::setCBRG(double cbr_g)
 {
   // Set the new value for CBR_G and save the previous one
   m_CBR_G[1] = m_CBR_G[0];
+   // For the first time, set the second CBR_G to 0
+   if (m_CBR_G[1] == -1) m_CBR_G[1] = 0.0;
   m_CBR_G[0] = cbr_g;
 };
 
 std::unordered_map<DCC::ReactiveState, DCC::ReactiveParameters> DCC::getConfiguration(double Ton, double currentCBR)
 {
     std::unordered_map<DCC::ReactiveState, DCC::ReactiveParameters> map;
-    if (Ton < 0.5)
+    if (Ton <= 0.5)
       {
         map = m_reactive_parameters_Ton_500_us;
       }
-    else if (Ton < 1)
+    else if (Ton > 0.5 && Ton <= 1)
       {
         map = m_reactive_parameters_Ton_1ms;
       }
@@ -164,11 +166,11 @@ void DCC::reactiveDCC()
   // If CBR sharing is available
   if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
     {
-      currentCBR = m_current_cbr;
+      currentCBR = m_CBG_L0_Hop[0];
     }
   else
     {
-      currentCBR = 0.5 * (m_CBR_G[0] + m_CBR_G[1]);
+      currentCBR = m_CBR_G[0];
     }
 
   if (currentCBR == -1)
